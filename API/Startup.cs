@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Channels;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,6 +35,19 @@ namespace API
             services.AddDbContext<DataContext>(options => {
                 options.UseNpgsql(Configuration.GetConnectionString("postgreSQL"));
             });
+            services.AddCors(options =>
+                options.AddPolicy("CorsPolicy",
+
+                policy => {
+                    policy
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithOrigins("http://localhost:3000");
+                } 
+                
+                )
+            );
+            services.AddMediatR(typeof(List.Handler).Assembly);
            
         }
 
@@ -48,6 +63,8 @@ namespace API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {

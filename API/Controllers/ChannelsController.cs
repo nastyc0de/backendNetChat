@@ -1,5 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Application.Channels;
+using Domain;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 
@@ -9,22 +14,21 @@ namespace API.Controllers
     [Route("api/channels")]
     public class ChannelsController: ControllerBase
     {
-        private DataContext _context;
+        private IMediator _mediator;
 
-        public ChannelsController(DataContext context)
+        public ChannelsController(IMediator mediator)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public IActionResult Get()
+        [HttpGet]
+        public async Task<ActionResult<List<Channel>>> List()
         {
-            var channels = _context.Channels.ToList();
-            return Ok(channels);
+            return await _mediator.Send(new List.Query());
         }
-        [HttpGet("{Id}")]
-        public IActionResult GetItem(Guid Id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Channel>> Item(Guid id)
         {
-            var channel = _context.Channels.FirstOrDefault(channel => channel.id == Id);
-            return Ok(channel);
+            return await _mediator.Send(new Item.Query{id = id});
         }
     }
 }
