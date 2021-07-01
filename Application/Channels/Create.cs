@@ -18,7 +18,7 @@ namespace Application.Channels
         public class Handler : IRequestHandler<Command>
         {
             private DataContext _context;
-
+            
             public Handler(DataContext context)
             {
                 _context = context ?? throw new ArgumentNullException(nameof(context));
