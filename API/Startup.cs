@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Application.Channels;
 using Domain;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,7 +34,12 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services
+                .AddControllers()
+                .AddFluentValidation(option =>{
+                    option.RegisterValidatorsFromAssemblyContaining<Create>();
+                });
+
             services.AddDbContext<DataContext>(options => {
                 options.UseNpgsql(Configuration.GetConnectionString("postgreSQL"));
             });
